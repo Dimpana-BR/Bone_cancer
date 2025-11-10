@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🩺 Bone Cancer Detection System</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- Header (Teal Gradient) -->
+    <header class="gradient-bg text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-3xl font-extrabold tracking-tight">🏥 Smart Hospital - Bone Cancer Detection</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- Info Section -->
+        <section class="lg:col-span-1 h-fit">
+            <h2 class="text-2xl font-bold mb-4 text-[#1e9e73] flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m-5 4h4a2 2 0 002-2v-7a2 2 0 00-2-2h-4a2 2 0 00-2 2v7a2 2 0 002 2z" />
+                </svg>
+                Bone Cancer Overview
+            </h2>
+            <p class="text-gray-600 mb-6 border-l-4 border-[#2ad493] pl-3">
+                Bone cancer occurs when abnormal cells grow uncontrollably within your bones. Early detection is crucial for successful treatment and preventing metastasis.
+            </p>
+            <h3 class="text-xl font-semibold mb-3 text-gray-700">Cancer Stages:</h3>
+            <ul class="space-y-2 text-sm">
+                <li class="p-2 rounded bg-green-50 text-green-700"><b class="font-bold">Stage 1:</b> Localized small tumor, limited damage.</li>
+                <li class="p-2 rounded bg-yellow-50 text-yellow-700"><b class="font-bold">Stage 2:</b> Cancer growing within the bone, possibly slightly larger.</li>
+                <li class="p-2 rounded bg-red-50 text-red-700"><b class="font-bold">Stage 3:</b> Spread to nearby bones or lymph nodes.</li>
+                <li class="p-2 rounded bg-purple-50 text-purple-700"><b class="font-bold">Stage 4:</b> Metastasis to distant organs (e.g., lungs, brain).</li>
+            </ul>
+        </section>
+
+        <!-- Upload and Result Section -->
+        <section class="lg:col-span-2">
+            <div class="p-4">
+                <h2 class="text-3xl font-bold mb-6 text-center text-[#1e9e73] flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1v-3" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 16.5a4.125 4.125 0 11-8.25 0 4.125 4.125 0 018.25 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2a1 1 0 011 1v1a1 1 0 01-2 0V3a1 1 0 011-1zM20 7a1 1 0 01-1 1h-1a1 1 0 010-2h1a1 1 0 011 1zM4 7a1 1 0 01-1 1H2a1 1 0 010-2h1a1 1 0 011 1zM20 17a1 1 0 01-1 1h-1a1 1 0 010-2h1a1 1 0 011 1zM4 17a1 1 0 01-1 1H2a1 1 0 010-2h1a1 1 0 011 1z" />
+                    </svg>
+                    🧬 Upload X-Ray Image
+                </h2>
+                <div class="flex justify-center mb-6">
+                    <a href="/comparison" class="bg-[#2ad493] hover:bg-[#1e9e73] text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+                        View Model Comparison
+                    </a>
+                </div>
+                
+                <!-- Upload Form -->
+                <form id="uploadForm" action="/predict" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    <label for="imageUpload" class="block text-lg font-medium text-gray-700">Select Image File (JPEG/PNG)</label>
+                    <input type="file" id="imageUpload" name="image" accept="image/*" required class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#c8db34]/20 file:text-[#1e9e73] hover:file:bg-[#c8db34]/40 transition duration-150">
+                    
+                    <!-- Image Preview Container -->
+                    <div id="immediatePreviewContainer" class="mb-6 hidden">
+                        <h3 class="text-xl font-semibold mb-3 text-gray-700">Selected X-Ray Preview:</h3>
+                        <!-- The actual preview image will be displayed here -->
+                        <img id="imagePreview" class="rounded-lg shadow-md w-full max-h-96 object-contain border border-gray-200 bg-gray-50" src="#" alt="Selected X-ray Image" style="display:none;">
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-[#2ad493] hover:bg-[#1e9e73] text-white font-bold py-3 rounded-xl transition duration-300 transform hover:scale-[1.01] shadow-md shadow-[#2ad493]/50">
+                        Analyze X-Ray
+                    </button>
+                </form>
+
+                <!-- Result Area -->
+                <div id="result-area" class="mt-8">
+                    <!-- Results will be displayed here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Custom Modal for Alerts/Confirmations -->
+    <div id="custom-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-xl shadow-3xl max-w-sm w-full transform transition-all scale-100 duration-300">
+            <h4 id="modal-title" class="text-xl font-bold mb-4 text-[#1e9e73]"></h4>
+            <p id="modal-content" class="mb-6 text-gray-700"></p>
+            <div class="flex justify-end">
+                <button id="modal-button-ok" class="bg-[#2ad493] hover:bg-[#1e9e73] text-white font-bold py-2 px-4 rounded-lg">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-4 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm">© 2025 Smart Hospital | Powered by Quantum-AI</p>
+        </div>
+    </footer>
+
+    <script>
+        // Global utility function to display a custom modal instead of alert/confirm
+        function showCustomModal(title, content, buttonText) {
+            const modal = document.getElementById('custom-modal');
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-content').textContent = content;
+            document.getElementById('modal-button-ok').textContent = buttonText;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('modal-button-ok').onclick = () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            };
+        }
+
+        const form = document.getElementById('uploadForm');
+        const resultArea = document.getElementById('result-area');
+        const fileInput = document.getElementById('imageUpload');
+        const imagePreview = document.getElementById('imagePreview');
+        const immediatePreviewContainer = document.getElementById('immediatePreviewContainer');
+
+        // Variable to store the Data URL (base64) of the uploaded image
+        let uploadedImageUrl = null; 
+
+        // --- File Input Change Listener for Immediate Preview ---
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Store the generated Data URL (base64)
+                    uploadedImageUrl = e.target.result; 
+                    
+                    // Display the image in the immediate preview area
+                    imagePreview.src = uploadedImageUrl;
+                    imagePreview.style.display = 'block';
+                    immediatePreviewContainer.classList.remove('hidden');
+                }
+                
+                // Read the file as a Data URL
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                // Reset on clear
+                imagePreview.style.display = 'none';
+                immediatePreviewContainer.classList.add('hidden');
+                uploadedImageUrl = null;
+            }
+        });
+
+        // Function to determine stage based on probability
+        function getStage(prob) {
+            if (prob >= 0.8) return { stage: 'Stage 4 (Metastatic)', class: 'stage-4' };
+            if (prob >= 0.6) return { stage: 'Stage 3 (Locally Advanced)', class: 'stage-3' };
+            if (prob >= 0.3) return { stage: 'Stage 2 (Localized)', class: 'stage-2' };
+            return { stage: 'Stage 1 (Early Localized)', class: 'stage-1' };
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!fileInput.files.length || !uploadedImageUrl) {
+                showCustomModal('Upload Error', 'Please select an X-ray image file before analyzing.', 'Got it');
+                return;
+            }
+
+            // 1. Display Loading State (Updated to Teal colors)
+            resultArea.innerHTML = `
+                <div class="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-xl shadow-inner animate-pulse">
+                    <svg class="animate-spin h-8 w-8 text-[#2ad493] mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p class="text-[#1e9e73] font-medium">🔍 Analyzing X-ray... Please wait.</p>
+                </div>
+            `;
+
+            // 2. Submit the form via fetch to Flask backend
+            const formData = new FormData(form);
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                // 3. Process and Display Result
+                const probability = parseFloat(result.prob.replace('%', '')) / 100;
+                const isCancer = result.status.includes('Cancer');
+                const stageInfo = getStage(probability);
+
+                let resultHtml = `
+                    <div class="result-card-animation p-4 ${stageInfo.class}">
+                        <div class="flex flex-col md:flex-row gap-6 items-start">
+                            <!-- Image Preview -->
+                            <div class="flex-shrink-0">
+                                <img src="${result.image}" alt="X-Ray Preview" class="rounded-lg shadow-lg w-full md:w-auto object-cover max-w-xs transition duration-300 hover:scale-[1.05]" onerror="this.onerror=null; this.src='https://placehold.co/300x225/e0f2f1/047857?text=Image+Load+Error';" />
+                            </div>
+                            
+                            <!-- Prediction Details -->
+                            <div class="flex-grow">
+                                <h3 class="text-2xl font-extrabold mb-3">${result.status}</h3>
+                                <div class="space-y-3">
+                                    <p class="text-lg font-semibold">
+                                        <span class="text-gray-800">Malignancy Probability:</span> 
+                                        <span class="font-mono text-xl">${result.prob}</span>
+                                    </p>
+                                    
+                                    <div class="p-3 rounded-lg bg-white/70 border-l-4 border-[#2ad493]">
+                                        <p class="font-bold text-xl text-[#1e9e73]">
+                                            Estimated Clinical Stage: ${result.stage}
+                                        </p>
+                                        <p class="text-sm mt-1 text-gray-600">
+                                            ${isCancer ? 'Immediate consultation with an oncologist is recommended.' : 'Follow-up screening is advised for confirmation.'}
+                                        </p>
+                                    </div>
+
+                                    <!-- Progress Bar Visualization -->
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
+                                        <div class="h-2.5 rounded-full bg-red-600 transition-all duration-1000 ease-out" 
+                                            style="width: ${Math.min(probability * 100, 100)}%;">
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 text-right">Confidence Level Visualization</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                resultArea.innerHTML = resultHtml;
+            } catch (error) {
+                showCustomModal('Error', 'Failed to analyze the image. Please try again.', 'OK');
+                console.error('Prediction error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
